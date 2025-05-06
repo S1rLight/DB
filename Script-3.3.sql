@@ -63,7 +63,7 @@ INSERT INTO albums (title, release_year) VALUES
 ('Abbey Road', 1969),
 ('A Night at the Opera', 1975),
 ('Nevermind', 1991),
-('21', 2011);
+('21', 2020);
 
 INSERT INTO tracks (title, duration, album_id, artist_id) VALUES
 ('Come Together', '00:04:20', 1, 1),
@@ -114,12 +114,16 @@ SELECT albums.title, AVG(EXTRACT(EPOCH FROM tracks.duration)) AS avg_duration_se
 FROM albums
 JOIN tracks ON albums.id = tracks.album_id
 GROUP BY albums.title;
+
 	
 SELECT DISTINCT artists.name
 FROM artists
-LEFT JOIN album_artist ON artists.id = album_artist.artist_id
-LEFT JOIN albums ON album_artist.album_id = albums.id AND albums.release_year = 2020
-WHERE albums.id IS NULL;
+WHERE artists.id NOT IN (
+    SELECT DISTINCT album_artist.artist_id
+    FROM album_artist
+    JOIN albums ON album_artist.album_id = albums.id
+    WHERE albums.release_year = 2020
+);
 
 SELECT compilations.title
 FROM compilations
@@ -129,5 +133,23 @@ JOIN album_artist ON tracks.album_id = album_artist.album_id
 JOIN artists ON album_artist.artist_id = artists.id
 WHERE artists.name = 'Queen';
 
+SELECT title, duration
+FROM tracks
+ORDER BY duration DESC
+LIMIT 1;
 
+SELECT title
+FROM tracks
+WHERE duration >= INTERVAL '3 minutes 30 seconds';
 
+SELECT title
+FROM compilations
+WHERE release_year BETWEEN 2018 AND 2020;
+
+SELECT name
+FROM artists
+WHERE name NOT LIKE '% %';
+
+SELECT title
+FROM tracks
+WHERE title ILIKE '%мой%' OR title ILIKE '%my%';
